@@ -1,0 +1,94 @@
+Aqueles que já tentaram utilizar a <a href="http://pt.wikipedia.org/wiki/API" target="_blank">API</a> do <a href="http://www.flickr.com" target="_blank">Flickr</a> para apresentar sets (Álbuns) ordenados por data já perceberam que esta simples função é... impossível de ser feita (pelo menos hoje, enquanto escrevo este breve <em>howto</em>). O método <em>flickr.photosets.getList</em> traz apenas os sets ordenados por ID, ordenação que pode apresentar um resultado inesperado para o desenvolvedor.
+
+Com um jeitinho conseguimos pedalar pra cima do Flickr. A verdade é que este <em>tricky way</em> envolve a utilização de duas bibliotecas muito utilizadas e extremamente úteis no desenvolvimento web: <a href="http://www.jquery.com" target="_blank">jQuery</a> e <a href="http://prototypejs.org" target="_blank">Prototype JS</a>. Recomendo a utilização das versões compactadas dos arquivos <em>.js</em> para reduzir o tempo de carregamento da página.
+
+Mas, antes de começar, informo que este não é um tutorial sobre como acessar a API do Flickr para exibir álbuns e fotos, mas apenas como ordená-los cronologicamente. Para o beabá recomendo <a title="Listing your photo albums with the Flickr API and jQuery" href="http://www.mattryall.net/blog/2008/06/flickr-api-and-jquery" target="_blank">este excelente post</a> do <a href="http://www.mattryall.net" target="_blank">Matt Ryall</a>, o qual utilizei como referência.
+
+Utilizando o jQuery e o retorno em <a href="http://json.org/" target="_blank">JSON</a> da API do Flickr (método <em>flickr.photosets.getList</em>) já conseguimos trabalhar facilmente com os sets. Será uma estrutura com a apresentada abaixo (Exemplo retirado do site de Matt Ryall):
+<pre>jsonFlickrApi({
+    "photosets": {
+        "photoset": [ {
+            "id": "72157604307419500",
+            "primary": "2372816823",
+            "secret": "c76ae35928",
+            "server": "3264",
+            "farm": 4,
+            "photos": "5",
+            "title": { "_content": "Axis &amp; Allies" },
+            "description": { "_content": "A day of intense gaming ..."}
+        }, ... ],
+    },
+    "stat":"ok"
+})</pre>
+Como é possível notar-se, não existe nenhum campo de data na estrutura. Logo, a solução será incluir a data em algum dos campos existentes. No meu caso, escolhi o campo "_content" de "title". Apenas defini um padrão. A partir de agora os álbuns possuirão a seguinte estrutura de título:
+<pre><strong>20090303</strong> Meu álbum de férias em Maui</pre>
+Mantendo todos os meus álbuns com esta estrututura, conseguirei ordená-los cronologicamente. Só em pensar que bastava o Flickr disponibilizar um campo a mais...
+
+Enfim, minha função ficará assim:
+<pre lang="javascript" lineno="1">getListaDeAlbuns = function() {
+    var arrayOrdObj = new Array();
+    jQuery.getJSON('http://api.flickr.com/...&amp;jsoncallback=?', function (data) {
+        jQuery.each(data.photosets.photoset, function (i, set) {
+            var y, m, d, dtP;
+            var dateText = set.description._content.substring(0, 8);
+            y = parseInt(dateText.substring(0, 4));
+            m = (parseInt(dateText.substring(4, 6),10) - 1);
+            d = parseInt(dateText.substring(6, 8),10);
+            dtP = new Date();
+            dtP.setFullYear(y,m,d);
+            set.dtPubl = dtP;
+            arrayOrdObj[i] = set;
+        });
+        arrayOrdObj = arrayOrdObj.sortBy(function(i){return -i.dtPubl},this);
+        var y,ny,m,d,dM,list,li,dtData;
+        var divAlbunsList = jQuery('<div>').attr('id', 'divAlbunsList');
+        jQuery.each(arrayOrdObj, function (i, set) {
+            y = set.dtPubl.getFullYear();
+            if (i == 0) setID = set.id;
+            if (i == 0 || y != ny) {
+                list = jQuery('<dl>').attr('id', 'liAlbunsList');
+                divAlbunsList.append(jQuery('<h2>').text(y));
+            }
+            var link = jQuery('<a></a>').attr('id', 'set_' + set.id)
+                .attr('title', set.description._content.substr(13))
+                .attr('href', 'javascript:getImages('' + set.id + '')')
+                .text(set.title._content);
+            ddData = jQuery('<dd>');
+            dtData = jQuery('</dd><dt>').attr('class', 'classDate')
+                        .text(set.dtPubl.getDate().toPaddedString(2)
+                            + '/'
+                            + (set.dtPubl.getMonth()+1).toPaddedString(2));
+            li = jQuery('<li>').attr('style', 'line-height:25px')
+                    .append(link).append(dtData);
+            jQuery(ddData).append(link);
+            jQuery(list).append(dtData).append(ddData);
+            divAlbunsList.append(list);
+            ny = y;
+        });
+        jQuery(divAlbunsList).append(list);
+        jQuery('#container').empty();
+        jQuery('#container').append(divAlbunsList);
+    });
+}</pre>
+Vamos às explicações de cada linha:
+<ol>
+	<li>Declaração da função.</li>
+	<li>Criação do meu objeto Array que será ordenado.</li>
+	<li>Chamada à API do Flickr pelo jQuery.</li>
+	<li>Função para iteração dentro dos nós do array retornado.</li>
+	<li>Variáveis que serão utilizadas para data
+y = ano
+m = mês
+d = dia
+dtP = data de publicação</li>
+	<li>String com data é retirada do título do álbum.</li>
+	<li>Inteiro com valor do ano.</li>
+	<li>Inteiro com valor do mês.</li>
+	<li>Inteiro com valor do dia.</li>
+	<li>Criação do objeto Date.</li>
+	<li>Definição do objeto Date.</li>
+	<li>Inserção do objeto Date no objeto javascript retornado pela API do Flickr.</li>
+	<li>Adição do objeto ao array criado na linha 2.</li>
+	<li>A ordenação torna-se algo extremamente simples, resolvida em apenas uma linha, com a utilização do método sortBy, do Prototype. No meu exemplo, como quero ordenar do álbum mais recente para o mais antigo, retorno o valor negativo.</li>
+</ol>
+Da linha 16 em diante define-se apenas a exibição dos dados. Novamente é feita iteração, agora com o array <strong>arrayOrdObj</strong>, e uma lista com os álbuns é apresentada. Nota-se que cada item de lista possui um link para uma função javascript getImages(), que faz a chamada à API do Flickr para trazer as fotos do álbum selecionado, mas isso é assunto para outro post.

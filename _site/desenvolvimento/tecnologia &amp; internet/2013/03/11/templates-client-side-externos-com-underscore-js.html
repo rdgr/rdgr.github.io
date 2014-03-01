@@ -1,0 +1,129 @@
+<p>Templates client-side têm sido amplamente utilizados devido à praticidade que trazem à criação e manutenção de websites e aplicações web, cada vez mais <em>feature-rich</em>.</p>
+
+<p>Um projeto em que trabalhei recentemente já utilizava uma excelente biblioteca chamada <a href="http://underscorejs.org">Underscore.js</a>, ou, como seu próprio site diz, um cinto de utilidades para JavaScript, conforme a definição retirada de lá:</p>
+
+<blockquote>
+  <p>Underscore is a utility-belt library for JavaScript that provides a lot of the functional programming support that you would expect in Prototype.js (or Ruby), but without extending any of the built-in JavaScript objects. It's the tie to go along with jQuery's tux, and Backbone.js's suspenders.</p>
+</blockquote>
+
+<p>Dentre os oitenta métodos muito úteis para o desenvolvimento front-end, o Underscore.js também oferece o <code>_.template</code>, que compila templates JavaScript em funções que podem ser renderizadas em tela. O exemplo abaixo mostra como é simples atingir este objetivo:</p>
+
+<pre><code>var compiled = _.template("hello: &lt;%= name %&gt;");
+compiled({name : 'moe'});
+=&gt; "hello: moe"
+
+var list = "&lt;% _.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
+_.template(list, {people : ['moe', 'curly', 'larry']});
+=&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
+
+var template = _.template("&lt;b&gt;&lt;%- value %&gt;&lt;/b&gt;");
+template({value : '&lt;script&gt;'});
+=&gt; "&lt;b&gt;&amp;lt;script&amp;gt;&lt;/b&gt;"
+</code></pre>
+
+<p>Apesar da simplicidade que pode ser notada na utilização do método <code>_.template</code>, pode-se notar que o código não possui uma legibilidade boa. Para elementos simples, como uma simples impressão de <code>&lt;li&gt;</code> pode se suficiente, mas, e se for necessário código mais extenso, como uma tabela ou um bloco de informações que exija alguns <code>div</code>, <code>h[1-6]</code>, <code>ul</code>, <code>dl</code> etc?</p>
+
+<p>Uma prática comum é a utilização da concatenação de strings (arghh)...</p>
+
+<pre><code>var template = "&lt;div class="info-box"&gt;&lt;h2&gt;Lista de Pessoas&lt;/h2&gt;";
+template += "&lt;ul class="modal-list"&gt;";
+template += " &lt;% _.each(people, function(name) { %&gt; ";
+template += "&lt;/ul&gt;"
+</code></pre>
+
+<p>...que, em vias de fato, seria o típico "tapar o sol com a peneira", pois, além de exigir um extremo cuidado com a utilização das aspas, deixa a manutenção lenta e improdutiva pois, a cada linha deve ser instanciada a variável do template.</p>
+
+<p>Ok, então podemos utilizar o caractere de escape ao final de cada linha. Assim deixamos um código mais legível:</p>
+
+<pre><code>var template = "&lt;div class="info-box"&gt; 
+&lt;h2&gt;Lista de Pessoas&lt;/h2&gt; 
+&lt;ul class="modal-list"&gt; 
+    &lt;% _.each(people, function(name) { %&gt; 
+    &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; 
+    &lt;% }); %&gt; 
+&lt;/ul&gt; 
+&lt;/div&gt;;
+</code></pre>
+
+<p>Mais legível, concordo. Entretanto, ainda me incomoda ver os escapes de fim de linha, e, IMHO, não gostaria de ter de cuidar da manutenção de um código assim.</p>
+
+<p>Pensando de maneira mais simples, podemos alcançar soluções melhores.</p>
+
+<p>A primeira é utilizar o template embedded no próprio HTML, conforme no exemplo abaixo:</p>
+
+<pre><code>&lt;script id="meu-template" type="text/template"&gt;
+  &lt;div class="info-box"&gt;
+    &lt;h2&gt;Lista de Pessoas&lt;/h2&gt;
+    &lt;ul class="modal-list"&gt;
+      &lt;% _.each(people, function(name) { %&gt;
+        &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt;
+      &lt;% }); %&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/script&gt;
+</code></pre>
+
+<p>Atente para o atributo <code>type</code>. Ele não precisa ser <code>text/template</code>. Ele apenas não deve ser <code>text/javascript</code> para seu navegador não tentar processar seu conteúdo como código JavaScript.</p>
+
+<p>Dica: se você não gosta de ver código com delimitadores no estilo ERB, você pode padronizar para um que prefira ao utilizar:</p>
+
+<pre><code>_.templateSettings = {
+  interpolate : //g
+};
+
+var template = _.template("Hello !");
+template({name : "John"});
+=&gt; "Hello John!"
+</code></pre>
+
+<p>Finalmente temos uma opção legível, de manutenção simples (temos apenas código HTML e notações do Underscore no bloco) e fácil implementação, bastando, na chamada do <code>_.template</code>, referenciar o conteúdo do bloco inserido dentro das tags <code>&lt;script&gt;</code>:</p>
+
+<pre><code>var template = $("#meu-template").html()
+_.template template, {people : ['moe', 'curly', 'larry']}
+</code></pre>
+
+<p>Pensei em ir ainda um passo além. Como minha aplicação possui muitas interações em tela e exige a atualização constante de elementos em tela, além de eu gostar de olhar meu código-fonte e vê-lo <em>as clean as possible</em>, pensei: por que não deixar estes templates fora do arquivo HTML? Desta forma, a manutenção ficaria perfeita, com templates organizados em uma pasta específica do projeto.</p>
+
+<p>Desta forma, crio um arquivo HTML com o exato conteúdo presente dentro da tag <code>&lt;script&gt;</code> acima e o salvo com a extensão .html em uma pasta de meu projeto. Não poderia ser melhor, certo?</p>
+
+<p><img src="http://rodger.com.br/blog/wp-content/uploads/2013/03/folder1.gif" alt="Diretório para armazenameto dos templates" title="Templates em diretório específico da aplicação" /></p>
+
+<p>Agora, para chamar o arquivo externo, nada como o bom e velho <code>$.ajax</code> do jQuery. Para atomizar as chamadas, basta criar uma função que realizará todo o processo:</p>
+
+<pre><code>render = (tmplName, tmplData) -&gt;
+    render.tmplCache = {}  unless render.tmplCache
+    unless render.tmplCache[tmplName]
+      tmplDir = "/templates"
+      tmplURL = tmplDir + "/" + tmplName + ".html"
+      $.ajax
+        url: tmplURL
+        method: "GET"
+        dataType: "html"
+        async: false
+        success: (data) -&gt;
+          tmplString = data
+      render.tmplCache[tmplName] = _.template(tmplString)
+    render.tmplCache[tmplName] tmplData
+</code></pre>
+
+<p>O código acima é uma função JavaScript (escrita em <a href="http://coffeescript.org">CoffeeScript</a>) que recebe como parâmetros o nome do arquivo do template e o objeto que será processado no template. Ou seja, o retorno desta função já será o código HTML que será inserido no contêiner desejado:</p>
+
+<pre><code>var obj = {people : ['moe', 'curly', 'larry']}
+var content = render "info-box", {obj}
+$('#container').html(content)
+</code></pre>
+
+<p>Agora sim ficou perfeito, certo?</p>
+
+<p>Algumas considerações sobre o método <code>render</code> acima:</p>
+
+<ul>
+<li>A utilização <code>async: false</code> garante que o código deve aguardar o carregamento do template.</li>
+<li>É possível a criação de templates pré-carregados e pré-compilados</li>
+<li>Esta excelente solução foi proposta por <a href="http://koorchik.blogspot.ch/">koorchik</a> no <a href="http://stackoverflow.com/questions/8366733/external-template-in-underscore" title="External template in Underscore">Stackoverflow</a>.</li>
+<li>É importante analisar a aplicação para saber quando se deve utilizar esta abordagem, uma vez que uma nova requisição ajax será feita para cada template utilizado.</li>
+</ul>
+
+<p>Esta solução adequou-se muito bem às minhas necessidades do projeto. Lembro que parti da proposição de que estava utilizando o Underscore.js. Existem outras bibliotecas interessantíssimas que fazem o templating de forma inteligente e DRY, como <a href="http://embeddedjs.com">EJS</a>, <a href="https://github.com/janl/mustache.js/">Mustache.js</a>, <a href="http://handlebarsjs.com">Handlebars</a>, <a href="http://akdubya.github.com/dustjs">dust.js</a> etc. Vale a pena dar uma olhada na proposta de cada um deles. Para um overview, recomendo a leitura deste <a href="http://engineering.linkedin.com/frontend/client-side-templating-throwdown-mustache-handlebars-dustjs-and-more" title="The client-side templating throwdown: mustache, handlebars, dust.js, and more">post</a> de <a href="http://www.linkedin.com/in/veebs">Veena Basavaraj</a>, Engenheira de Software do LinkedIn.</p>
+
+<p>Thanks to <a href="http://twitter.com/pablocantero">@pablocantero</a>.</p>

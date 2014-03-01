@@ -1,0 +1,43 @@
+Desde que comprei meu primeiro smartphone fui um assíduo usuário de programas leitores de eBooks. Desde o <a href="http://www.motorola.com/motoinfo/product/details.jsp?globalObjectId=40" target="_blank">Motorola A1000</a>, passando pelo <a href="http://www.htc.com/uk/product/p3300/overview.html" target="_blank">HTC P3300</a>, a primeira coisa que fazia era percorrer o Google à procura da solução ideal. Nestes dois citados, o primeiro com o sistema operacional Symbian e o segundo um Windows Mobile, utilizava o <a href="http://www.mobipocket.com/en/DownloadSoft/ProductDetailsReader.asp" target="_blank">Mobipocket Reader</a>, que era muito bom e ficava ainda melhor com a utilização do <a href="http://www.mobipocket.com/en/DownloadSoft/ProductDetailsCreator.asp" target="_blank">Mobipocket Creator</a>, que gerava eBooks compatíveis com o Reader a partir de qualquer formato (PDF, DOC, HTML, LIT e até TXT).
+
+Agora com meu iPhone, minha busca voltara ao zero. Cheguei até a cogitar a compra de um <a href="http://www.sony.com/reader " target="_blank">Sony Reader Digital Book</a> ou até um <a href="http://www.amazon.com/Kindle" target="_blank">Kindle</a>, mas como importar fica caro e não queria esperar até a próxima viagem de amigo-parente, decidi insistir em achar algo específico para o iPhone. E, também, nada melhor que concentrar o maior número de utilidades em um aparelho só.
+
+Em fóruns as opiniões concentram-se em três preferidos: <a href="http://www.lexcycle.com/" target="_blank">Stanza</a> (cuja empresa criadora, a Lexcycle, <a href="http://www.ctv.ca/servlet/ArticleNews/story/CTVNews/20090428/Amazon_book_090428/20090428?hub=SciTech" target="_blank">acaba de ser comprada pela Amazon</a>, dona do Kindle), <a href="http://www.ereader.com/ereader/software/browse.htm" target="_blank">eReader</a> a <a href="http://www.instapaper.com" target="_blank">Instapaper</a>. Na Apple Store o mais famoso é o Stanza. Gratuito e com uma interface excelente. Um problema comum aos leitores de língua portuguesa é o acesso a livros em nosso idioma. E muitos já possuem diversos livros em suas máquinas e gostariam de utilizá-los diretamente no Stanza, ou, até mesmo, reutilizar aqueles em formato PDB, EPUB ou LIT de outros eBook readers.
+
+Instalei o Stanza mas não tinha muita utilidade porque ainda faltava uma resposta à questão "como organizar minha biblioteca?". Foi quando encontrei um <a href="http://www.mobileread.com/forums/showthread.php?t=42023" target="_blank">post</a> que trouxe mais do que respostas. Trouxe a solução. Como o próprio título do post diz, <em>the almost-perfect solution</em>.
+
+O princípio é básico. Todos que migraram para o iTunes para organizar sua biblioteca de mídia ficaram viciados em organização. E para os eBooks não seria diferente. Os meus, por exemplo, ficavam livres, leves, soltos e... desorganizados  em uma pasta "eBooks". Para organizar este caos o desenvolvedor Kovid Goyal iniciou o projeto open-source <strong><a href="http://calibre.kovidgoyal.net/" target="_blank">Calibre</a></strong>, que visa ser a solução final, de código aberto, para a organização de ebooks. O projeto está em constante desenvolvimento mas já pode ser considerado excelente e cumpre o que promete, além de fornecer um bônus, que é a <a href="http://calibre.kovidgoyal.net/wiki/Screenshots" target="_self">navegação 3D</a> (semelhante ao iTunes) pelas capas dos livros.
+
+Para resumir, o Calibre, além de converter eBooks dos mais comuns formatos, mantém organizada toda a sua biblioteca por categorias e <em>tags </em>e ainda disponibiliza um servidor que é sincronizado com o Stanza. O post que citei acima apresenta o passo-a-passo para a instalação e execução do conjunto iPhone-Stanza-Calibre mas, para facilitar, apresento abaixo uma livre tradução do texto.
+
+<strong>Programas necessários:</strong>
+<ul>
+	<li>Stanza: Programa para leitura de eBooks no iPhone. Gratuito na Appstore.</li>
+	<li>Calibre: O Stanza Desktop não gerencia sua biblioteca, algo necessário para quem possui muitos livros. O Calibre é gratuito, de código-aberto e funciona em diversas plataformas.</li>
+</ul>
+<strong>Utilizando o Calibre:</strong>
+<ul>
+	<li>Instale-o. (pode ser baixado <a href="http://calibre.kovidgoyal.net/download" target="_blank">aqui</a>).</li>
+	<li>Selecione "Adicionar livros de vários diretórios" para que ele importe toda a sua coleção de eBooks. Todos os formatos mais conhecidos (PDF, LIT, PCR etc) estarão dispostos na sua biblioteca.</li>
+	<li>No canto direito superior selecione EPUB como a saída padrão. É o formato que melhor funciona com o Stanza.</li>
+	<li>Abra uma conta no<a href="http://isbndb.com/" target="_blank"> ISBNdb.com</a>. O Calibre permite que você coloque sua AccessKey para que ele busque os metadados de um livro a partir do ISBN ou livro-autor. Tentei com alguns livros famosos em língua portuguesa e ele trouxe os dados e até algumas capas. Porém, mais sucesso com publicações em língua inglesa.</li>
+	<li>Caso a capa não seja encontrada, basta buscar por ela no Google Images, salvar em sua máquina (em qualquer diretório) e importar a imgem na tela de edição de metadados.</li>
+	<li>Adicione tags. Elas aparecem como assuntos no Stanza. Útil para separar livros de ficção científica, romances etc. Não crie tags por autores pois o Stanza já agrupa os livros desta forma automaticamente.</li>
+	<li>Após organizar os metadados, selecione todos os livros importados, verifique que EPUB foi selecionado como a saída e clique em "Bulk Convert". Clique em OK e aguarde a finalização dos Jobs criados. Após o término tudo estará organizado. Se você verificar o diretório de saíde do Calibre, provará que, finalmente, sua biblioteca está organizada.</li>
+</ul>
+<strong>Transferindo seus livros para o Stanza:</strong>
+
+Esta parte - a melhor parte - é a mais fácil. Segundo testes feitos pelos usuários do fórum, a sincronização pelo Stanza Desktop não é recomendada pois é lenta, capas são perdidas no processo e alguns arquivos LIT não abrem. Então, vamos ao procedimento correto:  
+<ol>
+	<li>No Calibre, vá em "Settings" (o ícone com o martelo) e inicie o servidor de conteúdo (Content Server).</li>
+	<li>Certifique-se que o seu iPhone e seu PC estejam na mesma rede WIFI.</li>
+	<li>no Stanza iPhone, selecione "Online Catalog" e depois o botão '+' no canto inferior direito.</li>
+	<li>Selecione "Add Stanza Catalog" e digite um nome para o catálogo. "Minha biblioteca", por exemplo.</li>
+	<li>Coloque o IP de sua máquina (Ex. http://192.168.1.2:8080/stanza ). Este IP (192.168.1.2) é o IP interno do seu PC na rede WIFI e não seu IP de acesso à Internet.</li>
+	<li>Após verificar a lista de livros, basta fazer o download e, voilà, boa leitura!</li>
+</ol>
+BTW, já coloquei todos os livros do Caio Fábio em minha biblioteca :)
+
+<img class="alignnone size-full wp-image-24" title="Biblioteca - Autor - Caio Fábio" src="http://rodger.com.br/blog/wp-content/uploads/2009/04/ca.jpg" alt="Biblioteca - Autor - Caio Fábio" width="480" height="320" />
+
+Espero que muitos possam se beneficiar desse post pois, como diz a série de títulos do <a href="http://pavablog.blogspot.com" target="_blank">Pavablog</a>, "<a href="http://pavablog.blogspot.com/2009/04/numa-tarde-no-verao-de-2001-andras.html" target="_blank">Livros só mudam pessoas"</a>! E, vendo este post sobre <a href="http://pt.wikipedia.org/wiki/BookCrossing" target="_blank">Bookcrossing</a>, seria demais alguém deixar um iPhone perdido em algum shopping como presente. lol.
